@@ -23,11 +23,9 @@ import web.cms.springmvc.converter.RoleToUserProfileConverter;
 @ComponentScan(basePackages = "web.cms.springmvc")
 public class AppConfig extends WebMvcConfigurerAdapter{
 	
-	
 	@Autowired
 	RoleToUserProfileConverter roleToUserProfileConverter;
 	
-
 	/**
      * Configure ViewResolvers to deliver preferred views.
      */
