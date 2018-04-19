@@ -51,7 +51,7 @@ public class User implements Serializable{
 
 	@NotEmpty
 	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "APP_USER_USER_PROFILE", 
+	@JoinTable(name = "USER_USER_PROFILE", 
              joinColumns = { @JoinColumn(name = "USER_ID") }, 
              inverseJoinColumns = { @JoinColumn(name = "USER_PROFILE_ID") })
 	private Set<UserProfile> userProfiles = new HashSet<UserProfile>();
@@ -149,7 +149,7 @@ public class User implements Serializable{
 	 */
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", ssoId=" + username + ", password=" + password
+		return "User [id=" + id + ", username=" + username + ", password=" + password
 				+ ", firstName=" + firstName + ", lastName=" + lastName
 				+ ", email=" + email + "]";
 	}

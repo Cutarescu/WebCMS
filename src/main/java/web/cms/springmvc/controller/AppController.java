@@ -1,5 +1,6 @@
 package web.cms.springmvc.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 
 import web.cms.springmvc.model.User;
 import web.cms.springmvc.model.UserProfile;
+import web.cms.springmvc.model.UserProfileType;
 import web.cms.springmvc.service.UserProfileService;
 import web.cms.springmvc.service.UserService;
 
@@ -73,10 +75,12 @@ public class AppController {
 		model.addAttribute("user", user);
 		model.addAttribute("edit", false);
 		model.addAttribute("loggedinuser", getPrincipal());
+		model.addAttribute("isAdmin", isUserAdmin());
 		return "registration";
 	}
 
-	/**
+
+    /**
 	 * This method will be called on form submission, handling POST request for
 	 * saving user in database. It also validates the user input
 	 */
@@ -85,20 +89,6 @@ public class AppController {
 			ModelMap model) {
 
 		if (result.hasErrors()) {
-			return "registration";
-		}
-
-		/*
-		 * Preferred way to achieve uniqueness of field [sso] should be implementing custom @Unique annotation 
-		 * and applying it on field [sso] of Model class [User].
-		 * 
-		 * Below mentioned peace of code [if block] is to demonstrate that you can fill custom errors outside the validation
-		 * framework as well while still using internationalized messages.
-		 * 
-		 */
-		if(!userService.isUserSSOUnique(user.getId(), user.getUsername())){
-			FieldError ssoError =new FieldError("user","ssoId",messageSource.getMessage("non.unique.ssoId", new String[]{user.getUsername()}, Locale.getDefault()));
-		    result.addError(ssoError);
 			return "registration";
 		}
 		
@@ -114,12 +104,13 @@ public class AppController {
 	/**
 	 * This method will provide the medium to update an existing user.
 	 */
-	@RequestMapping(value = { "/edit-user-{ssoId}" }, method = RequestMethod.GET)
-	public String editUser(@PathVariable String ssoId, ModelMap model) {
-		User user = userService.findBySSO(ssoId);
+	@RequestMapping(value = { "/edit-user-{username}" }, method = RequestMethod.GET)
+	public String editUser(@PathVariable String username, ModelMap model) {
+		User user = userService.findByUsername(username);
 		model.addAttribute("user", user);
 		model.addAttribute("edit", true);
 		model.addAttribute("loggedinuser", getPrincipal());
+		model.addAttribute("isAdmin", isUserAdmin());
 		return "registration";
 	}
 	
@@ -127,20 +118,19 @@ public class AppController {
 	 * This method will be called on form submission, handling POST request for
 	 * updating user in database. It also validates the user input
 	 */
-	@RequestMapping(value = { "/edit-user-{ssoId}" }, method = RequestMethod.POST)
+	@RequestMapping(value = { "/edit-user-{username}" }, method = RequestMethod.POST)
 	public String updateUser(@Valid User user, BindingResult result,
-			ModelMap model, @PathVariable String ssoId) {
+			ModelMap model, @PathVariable String username) {
 
 		if (result.hasErrors()) {
 			return "registration";
 		}
 
-		/*//Uncomment below 'if block' if you WANT TO ALLOW UPDATING SSO_ID in UI which is a unique key to a User.
-		if(!userService.isUserSSOUnique(user.getId(), user.getSsoId())){
-			FieldError ssoError =new FieldError("user","ssoId",messageSource.getMessage("non.unique.ssoId", new String[]{user.getSsoId()}, Locale.getDefault()));
-		    result.addError(ssoError);
-			return "registration";
-		}*/
+	      if(!userService.isUsernameUnique(user.getId(), user.getUsername())){
+	            FieldError usernameError =new FieldError("user","username",messageSource.getMessage("non.unique.username", new String[]{user.getUsername()}, Locale.getDefault()));
+	            result.addError(usernameError);
+	            return "registration";
+	        }
 
 
 		userService.updateUser(user);
@@ -152,11 +142,11 @@ public class AppController {
 
 	
 	/**
-	 * This method will delete an user by it's SSOID value.
+	 * This method will delete an user by it's USERNAME value.
 	 */
-	@RequestMapping(value = { "/delete-user-{ssoId}" }, method = RequestMethod.GET)
-	public String deleteUser(@PathVariable String ssoId) {
-		userService.deleteUserBySSO(ssoId);
+	@RequestMapping(value = { "/delete-user-{username}" }, method = RequestMethod.GET)
+	public String deleteUser(@PathVariable String username) {
+		userService.deleteUserByUsername(username);
 		return "redirect:/list";
 	}
 	
@@ -166,7 +156,13 @@ public class AppController {
 	 */
 	@ModelAttribute("roles")
 	public List<UserProfile> initializeProfiles() {
-		return userProfileService.findAll();
+	    List<UserProfile> roles = new ArrayList<UserProfile>();
+	    if(isUserAdmin()) {
+	        roles.addAll(userProfileService.findAll());
+        }else {
+            roles.add(userProfileService.findByType(UserProfileType.GUEST.getUserProfileType()));
+        }
+	    return roles;
 	}
 	
 	/**
@@ -229,5 +225,11 @@ public class AppController {
 	    return authenticationTrustResolver.isAnonymous(authentication);
 	}
 
+	/**
+     * Check if user is admin.
+     */
+    private boolean isUserAdmin() {
+        return !isCurrentAuthenticationAnonymous();
+    }
 
 }
