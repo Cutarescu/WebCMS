@@ -53,15 +53,22 @@ public class AppController {
 	@Autowired
 	AuthenticationTrustResolver authenticationTrustResolver;
 	
+	/**
+     * This method will retrieve the main page or redirect to login.
+     */
+    @RequestMapping(value = { "/", "/main" }, method = RequestMethod.GET)
+    public String getMainPage(ModelMap model) {
+        if(isCurrentAuthenticationAnonymous()){
+            return "login";
+        }
+        return "main";
+    }
 	
 	/**
 	 * This method will list all existing users.
 	 */
-	@RequestMapping(value = { "/", "/list" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public String listUsers(ModelMap model) {
-	    if(isCurrentAuthenticationAnonymous()){
-	        return "login";
-	    }
 		List<User> users = userService.findAllUsers();
 		model.addAttribute("users", users);
 		model.addAttribute("loggedinuser", getPrincipal());
