@@ -3,14 +3,14 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 
 <html>
-
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-	<title>Users List</title>
-	<link href="<c:url value='/static/css/bootstrap.css' />" rel="stylesheet"></link>
-	<link href="<c:url value='/static/css/app.css' />" rel="stylesheet"></link>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Main page</title>
+<link href="<c:url value='/static/css/bootstrap.css' />" rel="stylesheet"></link>
+<link href="<c:url value='/static/css/app.css' />" rel="stylesheet"></link>
 </head>
 <body>
-Main page
+	<%@include file="navbar.jsp"%>
+	<h2> Main page </h2>
 </body>
 </html>

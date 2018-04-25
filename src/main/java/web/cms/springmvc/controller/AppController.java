@@ -61,6 +61,7 @@ public class AppController {
         if(isCurrentAuthenticationAnonymous()){
             return "login";
         }
+        model.addAttribute("loggedinuser", getPrincipal());
         return "main";
     }
 	
