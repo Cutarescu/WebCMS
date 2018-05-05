@@ -21,6 +21,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -30,8 +31,6 @@ import web.cms.springmvc.model.UserProfile;
 import web.cms.springmvc.model.UserProfileType;
 import web.cms.springmvc.service.UserProfileService;
 import web.cms.springmvc.service.UserService;
-
-
 
 @Controller
 @RequestMapping("/")
@@ -74,6 +73,30 @@ public class AppController {
 		model.addAttribute("users", users);
 		model.addAttribute("loggedinuser", getPrincipal());
 		return "userslist";
+	}
+	
+	/**
+	 * This method will list all existing default files.
+	 */
+	@RequestMapping(value = { "/defaultFiles" }, method = RequestMethod.GET)
+	public String defaultFiles(ModelMap model) {
+		if(isCurrentAuthenticationAnonymous()){
+            return "login";
+        }
+        model.addAttribute("loggedinuser", getPrincipal());
+		return "defaultfiles";
+	}
+	
+	/**
+	 * This method will list all existing default files.
+	 */
+	@RequestMapping(value = { "/jqueryFileTree" }, method = RequestMethod.POST)
+	public String jqueryFileTree(ModelMap model) {
+		if(isCurrentAuthenticationAnonymous()){
+            return "login";
+        }
+        model.addAttribute("loggedinuser", getPrincipal());
+		return "jqueryFileTree";
 	}
 
 	/**

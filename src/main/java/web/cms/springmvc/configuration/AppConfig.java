@@ -40,6 +40,18 @@ public class AppConfig extends WebMvcConfigurerAdapter{
 	}
 	
 	/**
+     * Configure ViewResolvers to deliver preferred views.
+     */
+	@Bean
+	public InternalResourceViewResolver resolver () {
+		InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+		resolver.setViewClass(JstlView.class);
+		resolver.setPrefix("/WEB-INF/views/");
+		resolver.setSuffix(".jsp");
+		return resolver;
+	}
+	
+	/**
      * Configure ResourceHandlers to serve static resources like CSS/ Javascript etc...
      */
     @Override
