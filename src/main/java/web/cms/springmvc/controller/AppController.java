@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
@@ -21,10 +22,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import web.cms.springmvc.model.User;
 import web.cms.springmvc.model.UserProfile;
@@ -52,6 +55,8 @@ public class AppController {
 	@Autowired
 	AuthenticationTrustResolver authenticationTrustResolver;
 	
+	@Autowired
+	private HttpServletRequest request;
 	/**
      * This method will retrieve the main page or redirect to login.
      */
@@ -84,13 +89,19 @@ public class AppController {
             return "login";
         }
         model.addAttribute("loggedinuser", getPrincipal());
+        model.addAttribute("loggedinuser", getPrincipal());
+        if(System.getProperty("os.name").startsWith("Windows")) {
+            model.addAttribute("dir", "C:/xampp/htdocs/file/");
+        }else {
+            model.addAttribute("dir", "/home/michael/Documents/_installs/apache-tomcat-8.5.29/WebCMSFiles/");
+        }
 		return "defaultfiles";
 	}
 	
 	/**
 	 * This method will list all existing default files.
 	 */
-	@RequestMapping(value = { "/jqueryFileTree" }, method = RequestMethod.POST)
+	@RequestMapping(value = { "/jqueryFileTree" }, method = RequestMethod.GET)
 	public String jqueryFileTree(ModelMap model) {
 		if(isCurrentAuthenticationAnonymous()){
             return "login";
@@ -109,6 +120,7 @@ public class AppController {
 		model.addAttribute("edit", false);
 		model.addAttribute("loggedinuser", getPrincipal());
 		model.addAttribute("isAdmin", isUserAdmin());
+		model.addAttribute("action", "/WebCMS/newuser");
 		return "registration";
 	}
 
@@ -129,6 +141,7 @@ public class AppController {
 
 		model.addAttribute("success", "User " + user.getFirstName() + " "+ user.getLastName() + " registered successfully");
 		model.addAttribute("loggedinuser", getPrincipal());
+		model.addAttribute("isAnonymous", isCurrentAuthenticationAnonymous());
 		//return "success";
 		return "registrationsuccess";
 	}
@@ -144,6 +157,7 @@ public class AppController {
 		model.addAttribute("edit", true);
 		model.addAttribute("loggedinuser", getPrincipal());
 		model.addAttribute("isAdmin", isUserAdmin());
+		model.addAttribute("action", "/WebCMS/edit-user-" + user.getUsername());
 		return "registration";
 	}
 	
@@ -170,6 +184,7 @@ public class AppController {
 
 		model.addAttribute("success", "User " + user.getFirstName() + " "+ user.getLastName() + " updated successfully");
 		model.addAttribute("loggedinuser", getPrincipal());
+		model.addAttribute("isAnonymous", isCurrentAuthenticationAnonymous());
 		return "registrationsuccess";
 	}
 
@@ -189,13 +204,7 @@ public class AppController {
 	 */
 	@ModelAttribute("roles")
 	public List<UserProfile> initializeProfiles() {
-	    List<UserProfile> roles = new ArrayList<UserProfile>();
-	    if(isUserAdmin()) {
-	        roles.addAll(userProfileService.findAll());
-        }else {
-            roles.add(userProfileService.findByType(UserProfileType.GUEST.getUserProfileType()));
-        }
-	    return roles;
+	    return userProfileService.findAll();
 	}
 	
 	/**
@@ -261,8 +270,23 @@ public class AppController {
 	/**
      * Check if user is admin.
      */
-    private boolean isUserAdmin() {
-        return !isCurrentAuthenticationAnonymous();
+    /**
+     * Check if user is admin.
+     */
+    public boolean isUserAdmin() {
+        return userHasRole(UserProfileType.ADMIN);
+    }
+
+    public boolean userHasRole(UserProfileType role) {
+        Object curentUser = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(curentUser instanceof UserDetails) {
+            for(GrantedAuthority authority : ((UserDetails)curentUser).getAuthorities()){
+                if(authority.getAuthority().equals(role.getRole())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }

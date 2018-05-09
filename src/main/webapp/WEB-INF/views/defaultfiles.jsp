@@ -12,11 +12,11 @@
 		<script src="<c:url value="/static/js/fileTree/jquery.js" />" ></script>
 		<script src="<c:url value="/static/js/fileTree/jquery.easing.js" />" ></script>
 		<script src="<c:url value="/static/js/fileTree/jqueryFileTree.js" />" ></script>
-	
+		
 		<script type="text/javascript">
 			$(document).ready( function() {
 				//window.location + /jqueryFileTree
-				$('#fileTreeDemo_1').fileTree({ root: 'C:/xampp/htdocs/file/', script: 'jqueryFileTree.jsp' }, function(file) { 
+				$('#fileTreeDemo_1').fileTree({ root: "${dir}", script: 'jqueryFileTree' }, function(file) { 
 					alert(file);
 				});
 			});

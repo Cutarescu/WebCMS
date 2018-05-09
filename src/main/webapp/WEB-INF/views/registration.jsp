@@ -16,7 +16,7 @@
 		<%@include file="authheader.jsp" %>
 
 		<div class="well lead">User Registration Form</div>
-	 	<form:form method="POST" modelAttribute="user" class="form-horizontal" action="/WebCMS/newuser">
+	 	<form:form method="POST" modelAttribute="user" class="form-horizontal" action="${action}">
 			<form:input type="hidden" path="id" id="id"/>
 			
 			<div class="row">
@@ -83,7 +83,16 @@
 				<div class="form-group col-md-12">
 					<label class="col-md-3 control-lable" for="userProfiles">Roles</label>
 					<div class="col-md-7">
-						<form:select path="userProfiles" items="${roles}" multiple="true" itemValue="id" itemLabel="type" class="form-control input-sm" />
+						<c:choose>
+							<c:when test="${isAdmin}">
+								<form:select path="userProfiles" items="${roles}" multiple="true" itemValue="id" itemLabel="type" class="form-control input-sm" />
+							</c:when>
+							<c:otherwise>
+								<form:select path="userProfiles" itemValue="id" itemLabel="type" class="form-control input-sm" >
+									<form:option value="1">GUEST</form:option>
+								</form:select>
+							</c:otherwise>
+						</c:choose>
 						<div class="has-error">
 							<form:errors path="userProfiles" class="help-inline"/>
 						</div>

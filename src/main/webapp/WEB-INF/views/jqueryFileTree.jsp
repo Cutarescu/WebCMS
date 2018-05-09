@@ -11,7 +11,6 @@
     if (dir == null) {
     	return;
     }
-    dir = "C:/xampp/htdocs/file/";
 	
 	if (dir.charAt(dir.length()-1) == '\\') {
     	dir = dir.substring(0, dir.length()-1) + "/";
