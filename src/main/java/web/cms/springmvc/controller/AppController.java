@@ -29,6 +29,7 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import web.cms.springmvc.constants.StringContants;
 import web.cms.springmvc.model.User;
 import web.cms.springmvc.model.UserProfile;
 import web.cms.springmvc.model.UserProfileType;
@@ -90,15 +91,11 @@ public class AppController {
         }
         model.addAttribute("loggedinuser", getPrincipal());
         model.addAttribute("loggedinuser", getPrincipal());
-        if(System.getProperty("os.name").startsWith("Windows")) {
-            model.addAttribute("dir", "C:/xampp/htdocs/file/");
-        }else {
-            model.addAttribute("dir", "/home/michael/Documents/_installs/apache-tomcat-8.5.29/WebCMSFiles/");
-        }
+        model.addAttribute("dir", getRootPathByOS());
 		return "defaultfiles";
 	}
-	
-	/**
+
+    /**
 	 * This method will list all existing default files.
 	 */
 	@RequestMapping(value = { "/jqueryFileTree" }, method = RequestMethod.GET)
@@ -109,7 +106,15 @@ public class AppController {
         model.addAttribute("loggedinuser", getPrincipal());
 		return "jqueryFileTree";
 	}
-
+	
+    /**
+     * This method will provide the medium to update an existing user.
+     */
+    @RequestMapping(value = { "/get-content" }, method = RequestMethod.GET)
+    public String readFileContent(ModelMap model) {
+        return "fileContent";
+    }
+    
 	/**
 	 * This method will provide the medium to add a new user.
 	 */
@@ -288,5 +293,12 @@ public class AppController {
         }
         return false;
     }
-
+    
+    private String getRootPathByOS() {
+        if(System.getProperty("os.name").startsWith("Windows")) {
+            return StringContants.ROOT_PATH_WINDOWS;
+        }else {
+            return StringContants.ROOT_PATH_LINUX;
+        }
+    }
 }

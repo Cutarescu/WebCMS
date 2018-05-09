@@ -33,7 +33,7 @@
 if(jQuery) (function($){
 	
 	$.extend($.fn, {
-		fileTree: function(o, h) {
+		fileTree: function(o) {
 			// Defaults
 			if( !o ) var o = {};
 			if( o.root == undefined ) o.root = '/';
@@ -75,6 +75,12 @@ if(jQuery) (function($){
 					});
 				}
 				
+				function displayFile(rel){
+					$.get("get-content", { dir: rel }, function(data) {
+						$("#content")[0].innerHTML = data;
+					});
+				}
+				
 				function bindTree(t) {
 					$(t).find('LI A').bind(o.folderEvent, function() {
 						if( $(this).parent().hasClass('directory') ) {
@@ -93,7 +99,7 @@ if(jQuery) (function($){
 								$(this).parent().removeClass('expanded').addClass('collapsed');
 							}
 						} else {
-							h($(this).attr('rel'));
+							displayFile($(this).attr('rel'));
 						}
 						return false;
 					});
