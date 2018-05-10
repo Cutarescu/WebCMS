@@ -1,5 +1,4 @@
 #container {
-	background-color:red;
     width: 80%;
     height: 90%;
     max-width: 80%;
@@ -8,7 +7,6 @@
 }
 
 #content {
-	background-color: yellow;
     width: 99%;
     height: 90%;
     border-style: solid;
@@ -23,4 +21,10 @@
     height: 100%;
     width: 100%;
     overflow: auto;
+    resize: none;
+}
+
+.button {
+    padding: 2px;
+    margin: 5px;
 }

@@ -30,6 +30,7 @@ if(jQuery) (function($){
 				function displayFile(rel){
 					$.get("get-content", { dir: rel }, function(data) {
 						$("#content")[0].innerHTML = data;
+						$("#saveButton")[0].onclick = saveFile(rel);
 					});
 				}
 				

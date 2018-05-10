@@ -27,10 +27,15 @@
 			<div class="example">
 				<h2>Default Files</h2>
 				<div id="fileTreeDemo_1" class="demo"></div>
+				<button class="button" id="addFile">Add file</button>
 			</div>
 			<div id="container">
 				<div id="content">
+					<textarea id='fileContent'>
+					</textarea>
 				</div>
+				<button class="button" id="saveButton">Save</button>
+				<button class="button" id="editButton" onclick="clearContent">Cancel</button>
 			</div>
 	</body>
 </html>

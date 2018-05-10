@@ -103,11 +103,29 @@ public class AppController {
 	}
 	
     /**
-     * This method will provide the medium to update an existing user.
+     * This method will provide the content of the requested file.
      */
     @RequestMapping(value = { "/get-content" }, method = RequestMethod.GET)
     public String readFileContent(ModelMap model) {
         return "fileContent";
+    }
+    
+    /**
+     * This method is used to update a file.
+     */
+    @RequestMapping(value = { "/edit-file" }, method = RequestMethod.PUT)
+    public Boolean editFile(ModelMap model) {
+        
+        return true;
+    }
+    
+    /**
+     * This method is used to create a new file.
+     */
+    @RequestMapping(value = { "/create-file" }, method = RequestMethod.POST)
+    public Boolean createFile(ModelMap model) {
+        
+        return true;
     }
     
 	/**
