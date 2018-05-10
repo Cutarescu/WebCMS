@@ -10,7 +10,7 @@
 <link href="<c:url value='/static/css/app.css' />" rel="stylesheet"></link>
 </head>
 <body>
-	<%@include file="navbar.jsp"%>
+	<%@include file="utils/navbar.jsp"%>
 	<h2> Main page </h2>
 </body>
 </html>

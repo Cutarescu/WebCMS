@@ -6,7 +6,7 @@
 <body>
 
 <h2> <a href="/WebCMS/"> WebCMS </a></h2>
-<%@include file="authheader.jsp" %>	
+<%@include file="./authheader.jsp" %>	
 
 <ul>
   <li><a href="/WebCMS/">Home</a></li>

@@ -22,15 +22,11 @@
 			});
 		</script>
 	</head>
-	
+	<%@include file="utils/navbar.jsp"%>
 	<body>
-			<h1>jQuery File Tree Demo</h1>
-			<p>
-				test.
-			</p>
-			<div class="example">
-				<h2>Default options</h2>
-				<div id="fileTreeDemo_1" class="demo"></div>
-			</div>
+		<div class="example">
+			<h2>Default Files</h2>
+			<div id="fileTreeDemo_1" class="demo"></div>
+		</div>
 	</body>
 </html>
