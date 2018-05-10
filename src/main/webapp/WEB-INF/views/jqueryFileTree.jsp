@@ -13,7 +13,7 @@
 	}
 	
 	dir = java.net.URLDecoder.decode(dir, "UTF-8");	
-	out.print("<h1>" + dir + "</h1>");
+	//out.print("<h1>" + dir + "</h1>");
     if (new File(dir).exists()) {
 		String[] files = new File(dir).list(new FilenameFilter() {
 		    public boolean accept(File dir, String name) {
