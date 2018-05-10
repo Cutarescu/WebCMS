@@ -1,6 +1,5 @@
 package web.cms.springmvc.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -25,9 +24,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import web.cms.springmvc.constants.StringContants;
 import web.cms.springmvc.model.User;
@@ -89,7 +85,6 @@ public class AppController {
 		if(isCurrentAuthenticationAnonymous()){
             return "login";
         }
-        model.addAttribute("loggedinuser", getPrincipal());
         model.addAttribute("loggedinuser", getPrincipal());
         model.addAttribute("dir", getRootPathByOS());
 		return "defaultfiles";
@@ -273,9 +268,6 @@ public class AppController {
 	}
 
 	/**
-     * Check if user is admin.
-     */
-    /**
      * Check if user is admin.
      */
     public boolean isUserAdmin() {

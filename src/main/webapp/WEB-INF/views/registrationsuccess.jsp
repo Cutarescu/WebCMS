@@ -11,7 +11,7 @@
 </head>
 <body>
 	<div class="generic-container">
-		<%@include file="authheader.jsp" %>
+		<%@include file="utils/authheader.jsp" %>
 		
 		<div class="alert alert-success lead">
 	    	${success}
