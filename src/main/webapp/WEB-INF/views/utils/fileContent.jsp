@@ -7,7 +7,5 @@
 		return;
 	}
   	byte[] encoded = Files.readAllBytes(Paths.get(path));
-  	out.print("<textarea id ='fileContent'>");
 	out.print(new String(encoded, Charset.defaultCharset()));
-	out.print("</textarea>");
 %>

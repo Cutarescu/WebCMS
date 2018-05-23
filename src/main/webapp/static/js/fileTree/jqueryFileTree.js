@@ -4,7 +4,6 @@ if(jQuery) (function($){
 		fileTree: function(o) {
 			// Defaults
 			if( !o ) var o = {};
-			if( o.root == undefined ) o.root = '/';
 			if( o.script == undefined ) o.script = 'jqueryFileTree';
 			if( o.folderEvent == undefined ) o.folderEvent = 'click';
 			if( o.expandSpeed == undefined ) o.expandSpeed= 500;
@@ -13,13 +12,14 @@ if(jQuery) (function($){
 			if( o.collapseEasing == undefined ) o.collapseEasing = null;
 			if( o.multiFolder == undefined ) o.multiFolder = true;
 			if( o.loadMessage == undefined ) o.loadMessage = 'Loading...';
+			if( o.showOnlyDirs == undefined ) o.showOnlyDirs = false;
 			
 			$(this).each( function() {
 				
 				function showTree(c, t) {
 					$(c).addClass('wait');
 					$(".jqueryFileTree.start").remove();
-					$.get("jqueryFileTree", { dir: t }, function(data) {
+					$.get("jqueryFileTree", { dir: t, displayOnlyDirs : globalVariable.displayOnlyDirs}, function(data) {
 						$(c).find('.start').html('');
 						$(c).removeClass('wait').append(data);
 						if( o.root == t ) $(c).find('UL:hidden').show(); else $(c).find('UL:hidden').slideDown({ duration: o.expandSpeed, easing: o.expandEasing });
@@ -29,9 +29,37 @@ if(jQuery) (function($){
 				
 				function displayFile(rel){
 					$.get("get-content", { dir: rel }, function(data) {
-						$("#content")[0].innerHTML = data;
-						$("#saveButton")[0].onclick = saveFile(rel);
+						$("#fileContent")[0].value = removeLeadingNewLines(data);
+						globalVariable.currentFilePath = rel;
+						$("#saveButton").removeClass("hidden")
+						$("#cancelButton").removeClass("hidden")
 					});
+				}
+				
+				function highlightCurentFolder(rel){
+					var links = $("#fileTreeDemo_2 a");
+					if(links != undefined){
+						links.toArray().forEach(function(li){
+							if($(li).attr('rel') == rel){
+								$(li).addClass('highlighted');						
+							}else{
+								$(li).removeClass('highlighted');
+							}
+						});
+					}
+				}
+				
+				function highlightCurentFile(rel){
+					var links = $("#fileTreeDemo_1 a");
+					if(links != undefined){
+						links.toArray().forEach(function(li){
+							if($(li).attr('rel') == rel){
+								$(li).addClass('highlighted');						
+							}else{
+								$(li).removeClass('highlighted');
+							}
+						});
+					}
 				}
 				
 				function bindTree(t) {
@@ -44,15 +72,18 @@ if(jQuery) (function($){
 									$(this).parent().parent().find('LI.directory').removeClass('expanded').addClass('collapsed');
 								}
 								$(this).parent().find('UL').remove(); // cleanup
-								showTree( $(this).parent(), escape($(this).attr('rel').match( /.*\// )) );
+								showTree( $(this).parent(), escape($(this).attr('rel').match( /.*\// )));
 								$(this).parent().removeClass('collapsed').addClass('expanded');
 							} else {
 								// Collapse
 								$(this).parent().find('UL').slideUp({ duration: o.collapseSpeed, easing: o.collapseEasing });
 								$(this).parent().removeClass('expanded').addClass('collapsed');
 							}
+							highlightCurentFolder($(this).attr('rel'));
+							globalVariable.selectedFolder = $(this).attr('rel');
 						} else {
 							displayFile($(this).attr('rel'));
+							highlightCurentFile($(this).attr('rel'));
 						}
 						return false;
 					});
@@ -62,7 +93,7 @@ if(jQuery) (function($){
 				// Loading message
 				$(this).html('<ul class="jqueryFileTree start"><li class="wait">' + o.loadMessage + '<li></ul>');
 				// Get the initial file list
-				showTree( $(this), escape(o.root) );
+				showTree( $(this), escape(o.root));
 			});
 		}
 	});

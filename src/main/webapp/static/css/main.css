@@ -28,3 +28,35 @@
     padding: 2px;
     margin: 5px;
 }
+
+.hidden {
+    visibility: hidden;
+}
+
+div[aria-describedby=dialog-message] { 
+    right:0;
+    margin:auto;
+}
+
+div[aria-describedby=add-dialog] { 
+    right:0;
+    margin:auto;
+    width:580px;
+}
+
+#add-dialog .example {
+	width: 30%;
+    max-width: 30%;
+    max-height: 80%;
+    height: 80%;
+}
+
+#addFileFields{
+	float: left;
+    margin-top: 30px;
+    margin-left: 15px;
+}
+
+.highlighted {
+	background-color:#FF8C00;
+}

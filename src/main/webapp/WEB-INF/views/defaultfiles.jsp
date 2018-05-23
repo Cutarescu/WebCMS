@@ -9,16 +9,21 @@
 		<link href="<c:url value='/static/css/defaultFiles.css' />" rel="stylesheet" />
 		<link href="<c:url value='/static/css/jqueryFileTree.css' />" rel="stylesheet" />
 		<link href="<c:url value='/static/css/main.css' />" rel="stylesheet" />
+		<link href="<c:url value='/static/css/jquery-ui.min.css' />" rel="stylesheet" />
 		
-		<script src="<c:url value="/static/js/fileTree/jquery.js" />" ></script>
+		<script src="<c:url value="/static/js/fileTree/jquery-1.12.js" />" ></script>
 		<script src="<c:url value="/static/js/fileTree/jquery.easing.js" />" ></script>
 		<script src="<c:url value="/static/js/fileTree/jqueryFileTree.js" />" ></script>
+		<script src="<c:url value="/static/js/jquery-ui.min.js" />" ></script>
 		<script src="<c:url value="/static/js/displayer.js" />" ></script>
 		
 		<script type="text/javascript">
 			$(document).ready( function() {
 				//window.location + /jqueryFileTree
 				$('#fileTreeDemo_1').fileTree({ root: "${dir}", script: 'jqueryFileTree' });
+				$("#fileContent").bind( "keydown", function( event ) {
+					globalVariable.contentChanged = true;
+				});
 			});
 		</script>
 	</head>
@@ -27,15 +32,42 @@
 			<div class="example">
 				<h2>Default Files</h2>
 				<div id="fileTreeDemo_1" class="demo"></div>
-				<button class="button" id="addFile">Add file</button>
+				<button class="button" id="addFile" onclick="openAddDialog()">Add file</button>
 			</div>
 			<div id="container">
 				<div id="content">
 					<textarea id='fileContent'>
 					</textarea>
 				</div>
-				<button class="button" id="saveButton">Save</button>
-				<button class="button" id="editButton" onclick="clearContent">Cancel</button>
+				<button class="button hidden" id="saveButton" onclick="saveFile()">Save</button>
+				<button class="button hidden" id="cancelButton" onclick="reloadFile()">Cancel</button>
 			</div>
+			<div id="dialog-message" ></div>
+			<div id="add-dialog" class="hidden">			
+				<div class="example">
+					<h2>Directories</h2>
+					<div id="fileTreeDemo_2" class="demo">
+					</div>
+				</div>
+				<div id="addFileFields">
+					<div class="row">
+						<div class="form-group col-md-12">
+							<label class="col-md-3 control-lable">File name</label>
+							<div class="col-md-7">
+								<input type="text" class="form-control input-sm" id="filename"/>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="form-group col-md-12">
+							<label class="col-md-3 control-lable">File</label>
+							<div class="col-md-7">
+								<input type="file" class="form-control input-sm" id="file"/>
+							</div>
+						</div>
+					</div>	
+				</div>	
+			</div>
+			<span id="_csrf" class="hidden">${_csrf.token}</span>
 	</body>
 </html>

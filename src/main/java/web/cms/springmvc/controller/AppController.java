@@ -1,7 +1,14 @@
 package web.cms.springmvc.controller;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,6 +30,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import web.cms.springmvc.constants.StringContants;
@@ -99,7 +107,10 @@ public class AppController {
             return "login";
         }
         model.addAttribute("loggedinuser", getPrincipal());
-		return "jqueryFileTree";
+        request.setAttribute("dir", getRootPathByOS());
+        request.setAttribute("displayRoot", false);
+        request.setAttribute("displayOnlyDirs", false);
+		return "utils/jqueryFileTree";
 	}
 	
     /**
@@ -107,16 +118,69 @@ public class AppController {
      */
     @RequestMapping(value = { "/get-content" }, method = RequestMethod.GET)
     public String readFileContent(ModelMap model) {
-        return "fileContent";
+        return "utils/fileContent";
     }
     
     /**
      * This method is used to update a file.
+     * @throws IOException 
      */
-    @RequestMapping(value = { "/edit-file" }, method = RequestMethod.PUT)
-    public Boolean editFile(ModelMap model) {
-        
-        return true;
+    @RequestMapping(value = { "/edit-file" }, method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> editFile(){
+        boolean successful = true;
+        Map<String, Object> map = new HashMap<>();
+        String filePath = (String)request.getParameter("file");
+        String content = (String)request.getParameter("content");
+        BufferedWriter writer = null;
+        try {
+            writer = new BufferedWriter(new FileWriter(filePath));
+            writer.write(content);
+        } catch (IOException e) {
+            //e.printStackTrace();
+            successful = false;
+        }finally {
+            if(writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    successful = false;
+                }
+            }
+        }
+        map.put("success", successful);
+        if(successful) {
+            map.put("message", StringContants.FILE_SAVE_SUCCESS);
+        }else {
+            map.put("message", StringContants.FILE_SAVE_ERROR);
+        }
+        return map;
+    }
+    /**
+     * This method is used to check if a file exists before saving.
+     * @throws IOException 
+     */
+    @RequestMapping(value = { "/check-if-exists-{filePath}" }, method = RequestMethod.GET)
+    @ResponseBody
+    public Boolean checkIfNewFile(@PathVariable String filePath){
+        File f = new File(filePath);
+        if(f.isFile()){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    
+    /**
+     * This method is used to check if a file exists before saving.
+     * @throws IOException 
+     */
+    @RequestMapping(value = { "/add-file" }, method = RequestMethod.GET)
+    public String addNewFile(){
+            request.setAttribute("dir", getRootPathByOS());
+            request.setAttribute("displayRoot", true);
+            request.setAttribute("displayOnlyDirs", true);
+            return "addFile";
     }
     
     /**
