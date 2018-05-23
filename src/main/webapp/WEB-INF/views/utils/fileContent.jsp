@@ -7,5 +7,13 @@
 		return;
 	}
   	byte[] encoded = Files.readAllBytes(Paths.get(path));
-	out.print(new String(encoded, Charset.defaultCharset()));
+  	if(path.contains("png")){
+  		String[] split = path.split("webapp");
+  		String imgPath = request.getContextPath()+ split[1];
+  		out.print("<img src='");
+  		out.print(imgPath);
+  		out.print("' alt='ShowImage'>");
+  	} else {
+  		out.print(new String(encoded, Charset.defaultCharset()));
+  	}
 %>

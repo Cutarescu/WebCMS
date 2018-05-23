@@ -23,7 +23,9 @@
 	    dir += "/";
 	}
 	
-	dir = java.net.URLDecoder.decode(dir, "UTF-8");	
+	dir = java.net.URLDecoder.decode(dir, "UTF-8");
+	//dir = request.getRealPath(dir);
+	
     if (new File(dir).exists()) {
 		String[] files = new File(dir).list(new FilenameFilter() {
 		    public boolean accept(File dir, String name) {

@@ -1,28 +1,3 @@
-BODY, HTML {
-	padding: 0px;
-	margin: 0px;
-}
-
-BODY {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 11px;
-	background: #EEE;
-	padding: 15px;
-}
-
-H1 {
-	font-family: Georgia, serif;
-	font-size: 20px;
-	font-weight: normal;
-}
-
-H2 {
-	font-family: Georgia, serif;
-	font-size: 16px;
-	font-weight: normal;
-	margin: 0px 0px 10px 0px;
-}
-
 .example {
 	float: left;
     margin: 15px;

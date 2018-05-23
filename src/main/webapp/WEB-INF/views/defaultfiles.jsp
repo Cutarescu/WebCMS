@@ -19,7 +19,6 @@
 		
 		<script type="text/javascript">
 			$(document).ready( function() {
-				//window.location + /jqueryFileTree
 				$('#fileTreeDemo_1').fileTree({ root: "${dir}", script: 'jqueryFileTree' });
 				$("#fileContent").bind( "keydown", function( event ) {
 					globalVariable.contentChanged = true;

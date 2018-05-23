@@ -30,6 +30,14 @@ if(jQuery) (function($){
 				function displayFile(rel){
 					$.get("get-content", { dir: rel }, function(data) {
 						$("#fileContent")[0].value = removeLeadingNewLines(data);
+						if (data.indexOf("alt='ShowImage'") >= 0) {
+							$("#content img").remove();
+							$("#fileContent").hide();
+							$("#content").prepend(data);
+						} else {
+							$("#fileContent").show();
+							$("#content img").remove();
+						}
 						globalVariable.currentFilePath = rel;
 						$("#saveButton").removeClass("hidden")
 						$("#cancelButton").removeClass("hidden")
