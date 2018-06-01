@@ -31,6 +31,11 @@ function saveFile(){
 	}
 }
 
+function preview(){
+	var link = globalVariable.currentFilePath.split("webapp");
+	window.open("/"+location.pathname.split('/')[1] + link[1],'_blank');
+}
+
 function reloadFile(){
 	if(globalVariable.currentFilePath){
 		$.get("get-content", { dir: globalVariable.currentFilePath }, function(data) {

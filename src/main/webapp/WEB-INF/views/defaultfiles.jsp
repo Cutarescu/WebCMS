@@ -34,12 +34,14 @@
 				<button class="button" id="addFile" onclick="openAddDialog()">Add file</button>
 			</div>
 			<div id="container">
+				<div id="resourcePath" style="font-size: large;font-style: oblique;"></div>
 				<div id="content">
 					<textarea id='fileContent'>
 					</textarea>
 				</div>
 				<button class="button hidden" id="saveButton" onclick="saveFile()">Save</button>
 				<button class="button hidden" id="cancelButton" onclick="reloadFile()">Cancel</button>
+				<button class="button hidden" id="previewButton" onclick="preview()">Preview</button>
 			</div>
 			<div id="dialog-message" ></div>
 			<div id="add-dialog" class="hidden">			
