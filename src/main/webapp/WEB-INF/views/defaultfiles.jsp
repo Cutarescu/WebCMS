@@ -19,9 +19,20 @@
 		
 		<script type="text/javascript">
 			$(document).ready( function() {
-				$('#fileTreeDemo_1').fileTree({ root: "${dir}", script: 'jqueryFileTree' });
+				$('#fileTreeDemo_1').fileTree({ root: "${dir}", script: 'jqueryFileTree', jqueryFileTreeId : "#fileTreeDemo_1" });
 				$("#fileContent").bind( "keydown", function( event ) {
 					globalVariable.contentChanged = true;
+				});
+				$("#checkBoxFolder").bind( "click", function( event ) {
+					$("#fileInput")[0].disabled = event.target.checked;
+				});
+				$("#createAtRoot").bind( "click", function( event ) {
+					if($("#fileTreeDemo_2 .highlighted").length != 0){
+						$("#fileTreeDemo_2 .highlighted").removeClass('highlighted');
+					}
+				});
+				$("#fileInput").change(function(){
+					$("#filenameInput")[0].value = $("#fileInput")[0].files[0].name;
 				});
 			});
 		</script>
@@ -31,7 +42,8 @@
 			<div class="example">
 				<h2>Default Files</h2>
 				<div id="fileTreeDemo_1" class="demo"></div>
-				<button class="button" id="addFile" onclick="openAddDialog()">Add file</button>
+				<button class="button" id="addButton" onclick="openAddDialog()">Add</button>
+				<button class="button" id="deleteButton" onclick="deleteFile()">Delete</button>
 			</div>
 			<div id="container">
 				<div id="resourcePath" style="font-size: large;font-style: oblique;"></div>
@@ -44,6 +56,7 @@
 				<button class="button hidden" id="previewButton" onclick="preview()">Preview</button>
 			</div>
 			<div id="dialog-message" ></div>
+			<div id="confirm-message" ></div>
 			<div id="add-dialog" class="hidden">			
 				<div class="example">
 					<h2>Directories</h2>
@@ -55,7 +68,7 @@
 						<div class="form-group col-md-12">
 							<label class="col-md-3 control-lable">File name</label>
 							<div class="col-md-7">
-								<input type="text" class="form-control input-sm" id="filename"/>
+								<input type="text" class="form-control input-sm" id="filenameInput"/>
 							</div>
 						</div>
 					</div>
@@ -63,7 +76,23 @@
 						<div class="form-group col-md-12">
 							<label class="col-md-3 control-lable">File</label>
 							<div class="col-md-7">
-								<input type="file" class="form-control input-sm" id="file"/>
+								<input type="file" class="form-control input-sm" id="fileInput"/>
+							</div>
+						</div>
+					</div>	
+					<div class="row">
+						<div class="form-group col-md-12">
+							<label class="col-md-3 control-lable">Is folder </label>
+							<div class="col-md-7">
+								<input type="checkbox" class="form-control input-sm" id="checkBoxFolder"/>
+							</div>
+						</div>
+					</div>	
+					<div class="row">
+						<div class="form-group col-md-12">
+							<label class="col-md-3 control-lable">Create file at root '/' </label>
+							<div class="col-md-7">
+								<input type="checkbox" class="form-control input-sm" id="createAtRoot"/>
 							</div>
 						</div>
 					</div>	

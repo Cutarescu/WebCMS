@@ -14,7 +14,6 @@
         	return;
         }
     }
-	Boolean displayRoot = (Boolean)request.getAttribute("displayRoot");
 	Boolean displayFiles = !Boolean.valueOf(request.getParameter("displayOnlyDirs"));
 	
 	if (dir.charAt(dir.length()-1) == '\\') {
@@ -34,10 +33,6 @@
 		});
 		Arrays.sort(files, String.CASE_INSENSITIVE_ORDER);
 		out.print("<ul class=\"jqueryFileTree\" style=\"display: none;\">");
-		//root
-		if(displayRoot){
-		    out.print("<li class=\"directory collapsed\"><a href=\"#\" rel=\"" + dir + "/\">/</a></li>");
-		}
 		// All dirs
 		for (String file : files) {
 		    if (new File(dir, file).isDirectory()) {

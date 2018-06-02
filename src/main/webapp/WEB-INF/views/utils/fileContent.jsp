@@ -8,7 +8,7 @@
 	}
   	byte[] encoded = Files.readAllBytes(Paths.get(path));
   	if(path.contains("images")){
-  		String[] split = path.split("webapp");
+  		String[] split = path.split("WebCMS");
   		String imgPath = request.getContextPath()+ split[1];
   		out.print("<img src='");
   		out.print(imgPath);

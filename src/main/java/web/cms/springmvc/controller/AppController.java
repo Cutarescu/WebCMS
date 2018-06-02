@@ -1,15 +1,18 @@
 package web.cms.springmvc.controller;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -30,10 +33,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import web.cms.springmvc.constants.StringContants;
+import web.cms.springmvc.constants.StringConstants;
 import web.cms.springmvc.model.User;
 import web.cms.springmvc.model.UserProfile;
 import web.cms.springmvc.model.UserProfileType;
@@ -115,9 +121,11 @@ public class AppController {
 	
     /**
      * This method will provide the content of the requested file.
+     * @throws IOException 
      */
     @RequestMapping(value = { "/get-content" }, method = RequestMethod.GET)
-    public String readFileContent(ModelMap model) {
+    public String readFileContent(ModelMap model) throws IOException {
+        Files.probeContentType(new File(request.getParameter("dir")).toPath());
         return "utils/fileContent";
     }
     
@@ -125,13 +133,11 @@ public class AppController {
      * This method is used to update a file.
      * @throws IOException 
      */
-    @RequestMapping(value = { "/edit-file" }, method = RequestMethod.POST)
+    @RequestMapping(value = { "/edit-file" }, method = RequestMethod.PUT)
     @ResponseBody
-    public Map<String, Object> editFile(){
+    public Map<String, Object> editFile(@RequestParam("filePath") String filePath, @RequestParam("content") String content){
         boolean successful = true;
         Map<String, Object> map = new HashMap<>();
-        String filePath = (String)request.getParameter("file");
-        String content = (String)request.getParameter("content");
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter(new FileWriter(filePath));
@@ -148,11 +154,11 @@ public class AppController {
                 }
             }
         }
-        map.put("success", successful);
+        map.put(StringConstants.SUCCESS, successful);
         if(successful) {
-            map.put("message", StringContants.FILE_SAVE_SUCCESS);
+            map.put(StringConstants.MESSAGE, StringConstants.FILE_UPDATE_SUCCESS);
         }else {
-            map.put("message", StringContants.FILE_SAVE_ERROR);
+            map.put(StringConstants.MESSAGE, StringConstants.FILE_UPDATE_ERROR);
         }
         return map;
     }
@@ -164,32 +170,78 @@ public class AppController {
     @ResponseBody
     public Boolean checkIfNewFile(@PathVariable String filePath){
         File f = new File(filePath);
-        if(f.isFile()){
+        if(f.exists()){
             return true;
         }else{
             return false;
         }
     }
     
+    
     /**
-     * This method is used to check if a file exists before saving.
-     * @throws IOException 
+     * This method is used to create a new file/folder.
      */
-    @RequestMapping(value = { "/add-file" }, method = RequestMethod.GET)
-    public String addNewFile(){
-            request.setAttribute("dir", getRootPathByOS());
-            request.setAttribute("displayRoot", true);
-            request.setAttribute("displayOnlyDirs", true);
-            return "addFile";
+    @RequestMapping(value = { "/create-file" }, method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> createFile(MultipartHttpServletRequest requestHttp, @RequestParam("isFolder") String isFolder,
+                                    @RequestParam("parentFolder") String parentFolder, @RequestParam("name") String name, @RequestParam("rootLevel") String rootLevel) {
+        boolean successful = true;
+        Map<String, Object> map = new HashMap<>();
+        String filePath = parentFolder + "/" + name;
+        if(Boolean.parseBoolean(rootLevel)) {
+            filePath = getRootPathByOS() + "/" + name;
+        }
+        if(!checkIfNewFile(filePath)) {
+            map.put(StringConstants.SUCCESS, false);
+            map.put(StringConstants.MESSAGE, StringConstants.DUPLICATE_FILENAME_ERROR);
+        }
+        if(Boolean.parseBoolean(isFolder)) {
+            new File(filePath).mkdirs();
+        }else {
+            MultipartFile multipartFile = requestHttp.getFile("fileInput");
+            InputStream input = null;
+            try {
+                input = multipartFile.getInputStream();
+                Files.copy(input, new File(filePath).toPath());
+            } catch (IOException e) {
+                successful = false;
+            }finally {
+
+            }
+        }
+        map.put(StringConstants.SUCCESS, successful);
+        if(successful) {
+            map.put(StringConstants.MESSAGE, StringConstants.FILE_SAVE_SUCCESS);
+        }else {
+            map.put(StringConstants.MESSAGE, StringConstants.FILE_SAVE_ERROR);
+        }
+        return map;
     }
     
     /**
-     * This method is used to create a new file.
+     * This method is used to create a new file/folder.
      */
-    @RequestMapping(value = { "/create-file" }, method = RequestMethod.POST)
-    public Boolean createFile(ModelMap model) {
-        
-        return true;
+    @RequestMapping(value = { "/delete-file" }, method = RequestMethod.DELETE)
+    @ResponseBody
+    public Map<String, Object> deleteFile(@RequestParam("target") String target) {
+        boolean successful = true;
+        Map<String, Object> map = new HashMap<>();
+        if(checkIfNewFile(target)) {
+            map.put(StringConstants.SUCCESS, false);
+            map.put(StringConstants.MESSAGE, StringConstants.NO_SUCH_FILE);
+        }
+        try {
+            Files.delete(new File(target).toPath());
+        } catch (IOException e) {
+            successful=false;
+        }
+        map.put(StringConstants.SUCCESS, successful);
+        if(successful) {
+            map.put(StringConstants.MESSAGE, StringConstants.FILE_SAVE_SUCCESS);
+        }else {
+            map.put(StringConstants.MESSAGE, StringConstants.FILE_SAVE_ERROR);
+        }
+        return map;
     }
     
 	/**
@@ -221,10 +273,10 @@ public class AppController {
 		
 		userService.saveUser(user);
 
-		model.addAttribute("success", "User " + user.getFirstName() + " "+ user.getLastName() + " registered successfully");
+		model.addAttribute(StringConstants.SUCCESS, "User " + user.getFirstName() + " "+ user.getLastName() + " registered successfully");
 		model.addAttribute("loggedinuser", getPrincipal());
 		model.addAttribute("isAnonymous", isCurrentAuthenticationAnonymous());
-		//return "success";
+		//return StringConstants.SUCCESS;
 		return "registrationsuccess";
 	}
 
@@ -264,7 +316,7 @@ public class AppController {
 
 		userService.updateUser(user);
 
-		model.addAttribute("success", "User " + user.getFirstName() + " "+ user.getLastName() + " updated successfully");
+		model.addAttribute(StringConstants.SUCCESS, "User " + user.getFirstName() + " "+ user.getLastName() + " updated successfully");
 		model.addAttribute("loggedinuser", getPrincipal());
 		model.addAttribute("isAnonymous", isCurrentAuthenticationAnonymous());
 		return "registrationsuccess";
@@ -370,9 +422,9 @@ public class AppController {
     
     private String getRootPathByOS() {
         if(System.getProperty("os.name").startsWith("Windows")) {
-            return StringContants.ROOT_PATH_WINDOWS;
+            return StringConstants.ROOT_PATH_WINDOWS;
         }else {
-            return StringContants.ROOT_PATH_LINUX;
+            return StringConstants.ROOT_PATH_LINUX;
         }
     }
 }
