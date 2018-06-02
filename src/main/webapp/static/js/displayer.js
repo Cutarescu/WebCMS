@@ -26,20 +26,19 @@ function clearContent(){
 function saveFile(){
 	var fileContent = $("#fileContent")[0].value;
 	var _csrfToken = $("#_csrf")[0].innerHTML;
+	var object = {};
 	if(globalVariable.currentFilePath && globalVariable.contentChanged == true){
+		object.filePath = globalVariable.currentFilePath;
+		object.content=fileContent;
 		$.ajax({
 			type: "PUT",
-			url: "http://localhost:8080/WebCMS/edit-file",
-			processData : false,
-			contentType: false,
+			url: "http://localhost:8080/WebCMS/edit-file" + '?' + $.param(object),
+			contentType: 'application/json',
 			headers:
 	        	{ 
-				'X-CSRF-TOKEN': _csrfToken 
+				'X-CSRF-TOKEN': _csrfToken
 				},
-			data: {
-				file: globalVariable.currentFilePath,
-				content:fileContent
-			},
+			data: JSON.stringify(object),
 			success: function(data) {
 				if(data.success == true){
 					displayMessage(data.message, 0);
@@ -56,7 +55,7 @@ function saveFile(){
 }
 
 function preview(){
-	var link = globalVariable.currentFilePath.split("webapp");
+	var link = globalVariable.currentFilePath.split("WebCMS");
 	window.open("/"+location.pathname.split('/')[1] + link[1],'_blank');
 }
 

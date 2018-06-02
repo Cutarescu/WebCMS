@@ -15,7 +15,7 @@
   		out.print("' alt='ShowImage'>");
   	} else {
   	  	if(path.contains("video")){
-  	  		String[] split = path.split("webapp");
+  	  		String[] split = path.split("WebCMS");
   	  		String imgPath = request.getContextPath()+ split[1];
   	  		out.print("<video width='320' height='240' controls> <source src='");
   	  		out.print(imgPath);
