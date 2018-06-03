@@ -1,11 +1,13 @@
 package web.cms.springmvc.configuration;
 
+import javax.servlet.Filter;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration.Dynamic;
 
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
@@ -27,7 +29,11 @@ public class AppInitializer extends AbstractAnnotationConfigDispatcherServletIni
 	protected String[] getServletMappings() {
 		return new String[] { "/" };
 	}
-     
+	@Override
+    protected Filter[] getServletFilters() {
+        HiddenHttpMethodFilter httpMethodFilter = new HiddenHttpMethodFilter();
+        return new Filter[]{ httpMethodFilter};
+    }
     @Override
     public void onStartup(ServletContext sc) throws ServletException {
         super.onStartup(sc);
