@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -98,23 +99,36 @@ public class AppController {
             return "login";
         }
         model.addAttribute("loggedinuser", getPrincipal());
-        model.addAttribute("dir", getRootPathByOS());
+        model.addAttribute("dir", getRootPathByOS("default"));
 		return "defaultfiles";
 	}
 
     /**
 	 * This method will list all existing default files.
 	 */
-	@RequestMapping(value = { "/jqueryFileTree" }, method = RequestMethod.GET)
-	public String jqueryFileTree(ModelMap model) {
+	@RequestMapping(value = { "/jqueryFileTree-{typeFiles}" }, method = RequestMethod.GET)
+	public String jqueryFileTree(ModelMap model, @PathVariable String typeFiles) {
 		if(isCurrentAuthenticationAnonymous()){
             return "login";
         }
         model.addAttribute("loggedinuser", getPrincipal());
-        request.setAttribute("dir", getRootPathByOS());
+        request.setAttribute("dir", getRootPathByOS(typeFiles));
         request.setAttribute("displayRoot", false);
         request.setAttribute("displayOnlyDirs", false);
 		return "utils/jqueryFileTree";
+	}
+	
+	/**
+	 * This method will list all existing default files.
+	 */
+	@RequestMapping(value = { "/historyFiles" }, method = RequestMethod.GET)
+	public String historyFiles(ModelMap model) {
+		if(isCurrentAuthenticationAnonymous()){
+            return "login";
+        }
+        model.addAttribute("loggedinuser", getPrincipal());
+        model.addAttribute("dir", getRootPathByOS("history1"));
+		return "historyFiles";
 	}
 	
     /**
@@ -124,6 +138,9 @@ public class AppController {
     @RequestMapping(value = { "/get-content" }, method = RequestMethod.GET)
     public String readFileContent(ModelMap model) throws IOException {
         Files.probeContentType(new File(request.getParameter("dir")).toPath());
+        File file = new File(request.getParameter("dir"));
+        request.setAttribute("lastModified", file.lastModified());
+        model.addAttribute("lastModified", file.lastModified());
         return "utils/fileContent";
     }
     
@@ -137,9 +154,18 @@ public class AppController {
         boolean successful = true;
         Map<String, Object> map = new HashMap<>();
         BufferedWriter writer = null;
+        BufferedWriter historyWriter = null;
+        //save in history files
+        String historyContent = getFileContent(filePath);
+        String[] split = filePath.split("WebCMS");
+        String historyPath = split[0] + "WebCMS/history1" + split[1];
+        
         try {
             writer = new BufferedWriter(new FileWriter(filePath));
+            historyWriter = new BufferedWriter(new FileWriter(historyPath));
+            
             writer.write(content);
+            historyWriter.write(historyContent);
         } catch (IOException e) {
             //e.printStackTrace();
             successful = false;
@@ -151,13 +177,25 @@ public class AppController {
                     successful = false;
                 }
             }
+            
+            if(historyWriter != null) {
+                try {
+                	historyWriter.close();
+                } catch (IOException e) {
+                    successful = false;
+                }
+            }
         }
         map.put(StringConstants.SUCCESS, successful);
+        String message = "";
         if(successful) {
-            map.put(StringConstants.MESSAGE, StringConstants.FILE_UPDATE_SUCCESS);
+        	message=StringConstants.FILE_UPDATE_SUCCESS;
+            map.put(StringConstants.MESSAGE, message);
         }else {
-            map.put(StringConstants.MESSAGE, StringConstants.FILE_UPDATE_ERROR);
+        	message=StringConstants.FILE_UPDATE_ERROR;
+            map.put(StringConstants.MESSAGE, message);
         }
+        
         return map;
     }
     /**
@@ -187,7 +225,7 @@ public class AppController {
         Map<String, Object> map = new HashMap<>();
         String filePath = parentFolder + "/" + name;
         if(Boolean.parseBoolean(rootLevel)) {
-            filePath = getRootPathByOS() + "/" + name;
+            filePath = getRootPathByOS("default") + "/" + name;
         }
         if(!checkIfNewFile(filePath)) {
             map.put(StringConstants.SUCCESS, false);
@@ -418,11 +456,29 @@ public class AppController {
         return false;
     }
     
-    private String getRootPathByOS() {
-        if(System.getProperty("os.name").startsWith("Windows")) {
-            return StringConstants.ROOT_PATH_WINDOWS;
-        }else {
-            return StringConstants.ROOT_PATH_LINUX;
-        }
+    private String getRootPathByOS(String typeFiles) {
+    	if("default".equals(typeFiles)) {
+            if(System.getProperty("os.name").startsWith("Windows")) {
+                return StringConstants.ROOT_PATH_WINDOWS;
+            }else {
+                return StringConstants.ROOT_PATH_LINUX;
+            }
+    	} else {
+    		if(System.getProperty("os.name").startsWith("Windows")) {
+                return "C:/workspaces/.metadata/.plugins/org.eclipse.wst.server.core/tmp2/wtpwebapps/WebCMS/"+typeFiles;
+            }else {
+                return "/home/michael/eclipse-workspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/WebCMS/"+typeFiles;
+            }
+    	}
     }
+
+	private String getFileContent(String filePath) {
+		String content = "";
+		try {
+			content = new String(Files.readAllBytes(Paths.get(filePath)));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return content;
+	}
 }

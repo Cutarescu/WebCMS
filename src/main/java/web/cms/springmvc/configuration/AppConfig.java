@@ -61,6 +61,7 @@ public class AppConfig extends WebMvcConfigurerAdapter{
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/static/**").addResourceLocations("/static/");
         registry.addResourceHandler("/Default Files/**").addResourceLocations("/Default Files/");
+        registry.addResourceHandler("/history1/**").addResourceLocations("/history1/");
     }
     
     /**

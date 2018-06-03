@@ -4,7 +4,7 @@ if(jQuery) (function($){
 		fileTree: function(o) {
 			// Defaults
 			if( !o ) var o = {};
-			if( o.script == undefined ) o.script = 'jqueryFileTree';
+			if( o.script == undefined ) o.script = 'jqueryFileTree-default';
 			if( o.folderEvent == undefined ) o.folderEvent = 'click';
 			if( o.expandSpeed == undefined ) o.expandSpeed= 500;
 			if( o.collapseSpeed == undefined ) o.collapseSpeed= 500;
@@ -22,7 +22,11 @@ if(jQuery) (function($){
 				function showTree(c, t) {
 					$(c).addClass('wait');
 					$(".jqueryFileTree.start").remove();
-					$.get("jqueryFileTree", { dir: t, displayOnlyDirs : globalVariable.displayOnlyDirs}, function(data) {
+					var typeFiles = "default";
+					if(c.context.baseURI.indexOf("history") !== -1) {
+						typeFiles="history1";
+					}
+					$.get("jqueryFileTree-"+typeFiles, { dir: t, displayOnlyDirs : globalVariable.displayOnlyDirs}, function(data) {
 						$(c).find('.start').html('');
 						$(c).removeClass('wait').append(data);
 						if( o.root == t ) $(c).find('UL:hidden').show(); else $(c).find('UL:hidden').slideDown({ duration: o.expandSpeed, easing: o.expandEasing });
@@ -32,7 +36,7 @@ if(jQuery) (function($){
 				
 				function displayFile(rel){
 					$.get("get-content", { dir: rel }, function(data) {
-						var link = rel.split("webapp");
+						var link = rel.split("WebCMS");
 						$("#resourcePath").html("Path: /"+location.pathname.split('/')[1] + link[1]);
 						if (data.indexOf("alt='ShowImage'") >= 0 || data.indexOf("type='video") >= 0) {
 							$("#content img").remove();

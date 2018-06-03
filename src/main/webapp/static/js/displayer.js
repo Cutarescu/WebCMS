@@ -163,7 +163,7 @@ function openAddDialog(){
        }
     }).dialog('open');
 	globalVariable.displayOnlyDirs = true;
-	$('#fileTreeDemo_2').fileTree({ script: 'jqueryFileTree' , showOnlyDirs : true,  jqueryFileTreeId : "#fileTreeDemo_2" });
+	$('#fileTreeDemo_2').fileTree({ script: 'jqueryFileTree-default' , showOnlyDirs : true,  jqueryFileTreeId : "#fileTreeDemo_2" });
 }
 function addFile(){
 	var formData = new FormData();

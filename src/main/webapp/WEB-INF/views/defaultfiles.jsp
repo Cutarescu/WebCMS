@@ -19,7 +19,7 @@
 		
 		<script type="text/javascript">
 			$(document).ready( function() {
-				$('#fileTreeDemo_1').fileTree({ root: "${dir}", script: 'jqueryFileTree', jqueryFileTreeId : "#fileTreeDemo_1" });
+				$('#fileTreeDemo_1').fileTree({ root: "${dir}", script: 'jqueryFileTree-default', jqueryFileTreeId : "#fileTreeDemo_1" });
 				$("#fileContent").bind( "keydown", function( event ) {
 					globalVariable.contentChanged = true;
 				});
