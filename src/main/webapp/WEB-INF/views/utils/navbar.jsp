@@ -13,6 +13,7 @@
 <ul>
   <li><a href="/WebCMS/">Home</a></li>
   <li><a href="/WebCMS/defaultFiles">Get Default Files Tree</a></li>
+  <li><a href="/WebCMS/historyFiles">Get History Files Tree</a></li>
   <li><a href="/WebCMS/list">List of users</a></li>
   <li><a href="#about">About</a></li>
 </ul>

@@ -1,12 +1,7 @@
 <%@ page
 	import="java.io.File,java.io.FilenameFilter,java.util.Arrays"%>
 <%
-/**
-  * jQuery File Tree JSP Connector
-  * Version 1.0
-  * Copyright 2008 Joshua Gould
-  * 21 April 2008
-*/	
+
     String dir = request.getParameter("dir");
     if (dir == null || "undefined".equals(dir)) {
         dir = (String)request.getAttribute("dir");

@@ -5,7 +5,7 @@ public interface StringConstants {
     public String SUCCESS = "success";
     public String MESSAGE = "message";
     
-    public String ROOT_PATH_WINDOWS = "C:/Users/gabri/OneDrive/Documents/GitHub/WebCMS1/src/main/webapp/Default Files";
+    public String ROOT_PATH_WINDOWS = "C:/workspaces/.metadata/.plugins/org.eclipse.wst.server.core/tmp2/wtpwebapps/WebCMS/Default Files";
 //    public String ROOT_PATH_LINUX = "/home/michael/Documents/Facultate/POS/WebCMS/src/main/webapp/Default Files";
     public String ROOT_PATH_LINUX = "/home/michael/eclipse-workspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/WebCMS/Default Files";
     
