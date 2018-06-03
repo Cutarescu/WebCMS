@@ -187,13 +187,10 @@ public class AppController {
             }
         }
         map.put(StringConstants.SUCCESS, successful);
-        String message = "";
         if(successful) {
-        	message=StringConstants.FILE_UPDATE_SUCCESS;
-            map.put(StringConstants.MESSAGE, message);
+            map.put(StringConstants.MESSAGE, StringConstants.FILE_UPDATE_SUCCESS);
         }else {
-        	message=StringConstants.FILE_UPDATE_ERROR;
-            map.put(StringConstants.MESSAGE, message);
+            map.put(StringConstants.MESSAGE, StringConstants.FILE_UPDATE_ERROR);
         }
         
         return map;
